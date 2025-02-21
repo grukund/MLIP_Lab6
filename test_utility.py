@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 import numpy as np
-from prediction_demo import data_preparation,data_split,train_model,eval_model
+from prediction_demo import data_preparation, data_split, train_model, eval_model
 
 @pytest.fixture
 def housing_data_sample():
@@ -9,7 +9,7 @@ def housing_data_sample():
       data ={
       'price':[13300000,12250000],
       'area':[7420,8960],
-    	'bedrooms':[4,4],	
+      'bedrooms':[4,4],	
       'bathrooms':[2,4],	
       'stories':[3,4],	
       'mainroad':["yes","yes"],	
@@ -24,18 +24,27 @@ def housing_data_sample():
 
 def test_data_preparation(housing_data_sample):
     feature_df, target_series = data_preparation(housing_data_sample)
-    # Target and datapoints has same length
-    assert feature_df.shape[0]==len(target_series)
+    # Target and datapoints have the same length
+    assert feature_df.shape[0] == len(target_series)
 
-    #Feature only has numerical values
-    assert feature_df.shape[1] == feature_df.select_dtypes(include=(np.number,np.bool_)).shape[1]
+    # Feature only has numerical values
+    assert feature_df.shape[1] == feature_df.select_dtypes(include=(np.number, np.bool_)).shape[1]
 
 @pytest.fixture
 def feature_target_sample(housing_data_sample):
     feature_df, target_series = data_preparation(housing_data_sample)
-    return (feature_df, target_series)
+    return feature_df, target_series
 
 def test_data_split(feature_target_sample):
     return_tuple = data_split(*feature_target_sample)
-    # TODO test if the length of return_tuple is 4
-    raise NotImplemented
+    
+    # Check if data_split() returns exactly 4 items
+    assert len(return_tuple) == 4, "data_split() should return four elements (X_train, X_test, y_train, y_test)"
+
+    # Check if X_train and X_test are pandas DataFrames
+    assert isinstance(return_tuple[0], pd.DataFrame), "X_train should be a DataFrame"
+    assert isinstance(return_tuple[1], pd.DataFrame), "X_test should be a DataFrame"
+
+    # Check if y_train and y_test are pandas Series
+    assert isinstance(return_tuple[2], pd.Series), "y_train should be a Series"
+    assert isinstance(return_tuple[3], pd.Series), "y_test should be a Series"
